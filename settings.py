@@ -1,0 +1,14 @@
+# Window
+WIDTH = 1280
+HEIGHT = 720
+FPS = 60
+
+# Webcam
+CAMERA_ID = 0
+
+# Fruit
+FRUIT_SPAWN_TIME = 28
+GRAVITY = 0.32
+
+# Blade
+BLADE_LENGTH = 12

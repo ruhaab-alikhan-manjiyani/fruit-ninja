@@ -1,0 +1,79 @@
+import cv2
+
+from hand_tracker import HandTracker
+from game import Game
+from score import Score
+
+camera = cv2.VideoCapture(0)
+camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+camera.set(cv2.CAP_PROP_FPS, 60)
+
+tracker = HandTracker()
+game = Game()
+score = Score()
+
+while True:
+
+    success, frame = camera.read()
+
+    if not success:
+        break
+
+    frame = cv2.flip(frame, 1)
+
+    height, width = frame.shape[:2]
+
+    result = tracker.detect(frame)
+    blade = tracker.get_blade_tip(result, frame)
+
+    if not game.game_over:
+
+        game.update(width, height)
+
+        sliced = game.slice(blade, tracker.speed)
+
+        if sliced:
+            score.add()
+
+    frame = tracker.draw_landmarks(frame, result)
+    frame = tracker.draw_blade(frame, result)
+
+    game.draw(frame)
+    score.draw(frame)
+
+    if game.game_over:
+
+        cv2.putText(
+            frame,
+            "GAME OVER",
+            (330, 330),
+            cv2.FONT_HERSHEY_DUPLEX,
+            2,
+            (0, 0, 255),
+            4
+        )
+
+        cv2.putText(
+            frame,
+            "Press R to Restart",
+            (380, 390),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            1,
+            (255, 255, 255),
+            2
+        )
+
+    cv2.imshow("Fruit Ninja", frame)
+
+    key = cv2.waitKey(1) & 0xFF
+
+    if key == ord("q") or key == 27:
+        break
+
+    if game.game_over and key == ord("r"):
+        game = Game()
+        score = Score()
+
+camera.release()
+cv2.destroyAllWindows()
