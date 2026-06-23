@@ -1,6 +1,7 @@
 import cv2
 
 from hand_tracker import HandTracker
+from menu import Menu
 from game import Game
 from score import Score
 
@@ -12,6 +13,9 @@ camera.set(cv2.CAP_PROP_FPS, 60)
 tracker = HandTracker()
 game = Game()
 score = Score()
+menu = Menu()
+
+started = False
 
 while True:
 
@@ -35,6 +39,22 @@ while True:
 
         if sliced:
             score.add()
+
+    if not started:
+
+        frame = menu.draw(frame)
+
+        cv2.imshow("Fruit Ninja", frame)
+
+        key = cv2.waitKey(1)
+
+        if key == 32:      # SPACE
+            started = True
+
+        elif key == 27:    # ESC
+            break
+
+        continue
 
     # frame = tracker.draw_landmarks(frame, result)
     frame = tracker.draw_blade(frame, result)
