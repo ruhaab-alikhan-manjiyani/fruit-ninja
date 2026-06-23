@@ -36,33 +36,22 @@ while True:
         if sliced:
             score.add()
 
-    frame = tracker.draw_landmarks(frame, result)
+    # frame = tracker.draw_landmarks(frame, result)
     frame = tracker.draw_blade(frame, result)
 
     game.draw(frame)
     score.draw(frame)
 
     if game.game_over:
-
-        cv2.putText(
-            frame,
-            "GAME OVER",
-            (330, 330),
-            cv2.FONT_HERSHEY_DUPLEX,
-            2,
-            (0, 0, 255),
-            4
-        )
-
         cv2.putText(
             frame,
             "Press R to Restart",
             (380, 390),
             cv2.FONT_HERSHEY_SIMPLEX,
-            1,
+            2,
             (255, 255, 255),
             2
-        )
+        )[0]
 
     cv2.imshow("Fruit Ninja", frame)
 

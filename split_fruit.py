@@ -1,5 +1,7 @@
 import random
 import cv2
+import numpy as np
+
 from utils import overlay_png
 
 
@@ -11,30 +13,26 @@ class SplitFruit:
 
         h, w = self.image.shape[:2]
 
+        # Separate the halves with a small gap
+        gap = 8
+
         if side == "left":
-            self.image[:, w // 2:] = 0
+            self.image[:, w // 2 + gap:] = 0
+            self.vx = random.uniform(-8, -5)
+            self.rotation_speed = random.randint(-12, -6)
         else:
-            self.image[:, :w // 2] = 0
+            self.image[:, :w // 2 - gap] = 0
+            self.vx = random.uniform(5, 8)
+            self.rotation_speed = random.randint(6, 12)
 
         self.x = x
         self.y = y
 
-        self.side = side
-
-        if side == "left":
-            self.vx = -6
-            self.angle = -25
-        else:
-            self.vx = 6
-            self.angle = 25
-
-        self.vy = -8
-        self.gravity = 0.4
+        self.vy = random.uniform(-12, -9)
+        self.gravity = 0.45
 
         self.rotation = 0
-        self.rotation_speed = random.randint(-8, 8)
-
-        self.life = 60
+        self.life = 65
 
     def update(self):
 
@@ -55,18 +53,18 @@ class SplitFruit:
         h, w = self.image.shape[:2]
 
         matrix = cv2.getRotationMatrix2D(
-           (w // 2, h // 2),
-           self.rotation,
-           1
-    )
+            (w // 2, h // 2),
+            self.rotation,
+            1.0
+        )
 
         rotated = cv2.warpAffine(
-           self.image,
-           matrix,
-           (w, h),
-           flags=cv2.INTER_LINEAR,
-           borderMode=cv2.BORDER_TRANSPARENT
-    )
+            self.image,
+            matrix,
+            (w, h),
+            flags=cv2.INTER_LINEAR,
+            borderMode=cv2.BORDER_TRANSPARENT
+        )
 
         x = int(self.x - w // 2)
         y = int(self.y - h // 2)

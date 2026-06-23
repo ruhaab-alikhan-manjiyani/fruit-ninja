@@ -1,3 +1,5 @@
+from unittest import result
+
 import cv2
 import mediapipe as mp
 
@@ -97,9 +99,10 @@ class HandTracker:
         return frame
 
     def draw_blade(self, frame, result):
+
         if not result.hand_landmarks:
-            self.trail.clear()
-            return frame
+           self.trail.clear()
+           return frame
 
         height, width = frame.shape[:2]
 
@@ -111,16 +114,62 @@ class HandTracker:
 
         self.trail.append((x, y))
 
-        if len(self.trail) > 8:
-            self.trail.pop(0)
+        if len(self.trail) > 15:
+           self.trail.pop(0)
 
         for i in range(1, len(self.trail)):
-            cv2.line(
-                frame,
-                self.trail[i - 1],
-                self.trail[i],
-                (255, 255, 0),
-                5
+
+           p1 = self.trail[i - 1]
+           p2 = self.trail[i]
+
+           thickness = max(1, 12 - i)
+
+           # Outer glow
+           cv2.line(
+               frame,
+               p1,
+               p2,
+               (255, 255, 255),
+               thickness + 8,
+               cv2.LINE_AA
             )
+
+           # Cyan glow
+           cv2.line(
+               frame,
+               p1,
+               p2,
+               (255, 255, 0),
+               thickness + 4,
+               cv2.LINE_AA
+            )
+
+           # Bright core
+           cv2.line(
+               frame,
+               p1,
+               p2,
+               (0, 255, 255),
+               thickness,
+               cv2.LINE_AA
+            )
+
+        cv2.circle(
+           frame,
+           (x, y),
+           10,
+           (255, 255, 255),
+           -1,
+           cv2.LINE_AA
+        )
+
+        cv2.circle(
+           frame,
+           (x, y),
+           6,
+           (0, 255, 255),
+           -1,
+           cv2.LINE_AA
+        )
 
         return frame
